@@ -24,7 +24,7 @@ function JACC.parallel_for(N::I, f::F, x...) where {I <: Integer, F <: Function}
     blocks = ceil(Int, N / threads)
     threads = 256
     blocks = 66407
-    println("Threads: ", threads, " Blocks: ", blocks)
+    # println("Threads: ", threads, " Blocks: ", blocks)
 
     shmem_size = attribute(device(),CUDA.DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_BLOCK)
     #parallel_kernel(parallel_kargs...; threads = threads, blocks = blocks)
