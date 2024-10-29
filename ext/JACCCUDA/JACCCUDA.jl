@@ -97,7 +97,7 @@ end
 function _parallel_for_cuda(N, f, x...)
     i = (blockIdx().x - 1) * blockDim().x + threadIdx().x
     if i <= N
-      f(i, x...)
+    @inline f(i, x...)
     end
     return nothing
 end
