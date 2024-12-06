@@ -12,37 +12,22 @@ using .multi
 include("JACCEXPERIMENTAL.jl")
 using .experimental
 
-# function JACC.parallel_for(N::I, f::F, x...) where {I <: Integer, F <: Function}
-#     #parallel_args = (N, f, x...)
-#     #parallel_kargs = cudaconvert.(parallel_args)
-#     #parallel_tt = Tuple{Core.Typeof.(parallel_kargs)...}
-#     #parallel_kernel = cufunction(_parallel_for_cuda, parallel_tt)
-#     #maxPossibleThreads = CUDA.maxthreads(parallel_kernel)
-#     maxPossibleThreads = 512
-#     threads = min(N, maxPossibleThreads)
-#     blocks = ceil(Int, N / threads)
-#     # threads = 256
-#     # blocks = 66407
-#     println("Threads: ", threads, " Blocks: ", blocks)
-    
-#     shmem_size = attribute(device(),CUDA.DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_BLOCK)
-#     #parallel_kernel(parallel_kargs...; threads = threads, blocks = blocks)
-#     CUDA.@sync @cuda threads = threads blocks = blocks shmem = shmem_size _parallel_for_cuda(N, f, x...)
-# end
-
 function JACC.parallel_for(N::I, f::F, x...) where {I <: Integer, F <: Function}
-    # Determine the maximum number of threads per block supported by the device
-    maxPossibleThreads = CUDA.attribute(CUDA.device(), CUDA.DEVICE_ATTRIBUTE_MAX_THREADS_PER_BLOCK)
+    #parallel_args = (N, f, x...)
+    #parallel_kargs = cudaconvert.(parallel_args)
+    #parallel_tt = Tuple{Core.Typeof.(parallel_kargs)...}
+    #parallel_kernel = cufunction(_parallel_for_cuda, parallel_tt)
+    #maxPossibleThreads = CUDA.maxthreads(parallel_kernel)
+    maxPossibleThreads = 512
     threads = min(N, maxPossibleThreads)
     blocks = ceil(Int, N / threads)
+    # threads = 256
+    # blocks = 66407
+    println("Threads: ", threads, " Blocks: ", blocks, "N: ", N)
     
-    println("Threads: ", threads, " Blocks: ", blocks)
-    
-    # Determine the maximum shared memory per block
-    shmem_size = CUDA.attribute(CUDA.device(), CUDA.DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_BLOCK)
-    
-    # Launch the kernel
-    CUDA.@sync @cuda threads=threads blocks=blocks shmem=shmem_size _parallel_for_cuda(N, f, x...)
+    shmem_size = attribute(device(),CUDA.DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_BLOCK)
+    #parallel_kernel(parallel_kargs...; threads = threads, blocks = blocks)
+    CUDA.@sync @cuda threads = threads blocks = blocks shmem = shmem_size _parallel_for_cuda(N, f, x...)
 end
 
 function JACC.parallel_for(
