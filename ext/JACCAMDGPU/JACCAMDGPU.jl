@@ -96,14 +96,14 @@ function _parallel_for_amdgpu(N, f, x...)
     idx = workitemIdx().x + (workgroupIdx().x - 1) * workgroupDim().x
     total_workgroups = workgroupDim().x * workgroupDim().y * workgroupDim().z
     stride = total_workgroups * workgroupDim().x
-    if i <= N
-        @inline f(i, x...)
-        idx += stride
-    end
-    # while idx <= N
-    #     @inline f(idx, x...)
+    # if i <= N
+    #     @inline f(i, x...)
     #     idx += stride
     # end
+    while idx <= N
+        @inline f(idx, x...)
+        idx += stride
+    end
     return nothing
 end
 
