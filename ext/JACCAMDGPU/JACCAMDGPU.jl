@@ -97,7 +97,7 @@ function _parallel_for_amdgpu(N, f, x...)
     stride = workgroupDim().x * gridDim().x
     if i <= N
         @inline f(i, x...)
-        i += stride
+        # i += stride
     end
     return nothing
 end
