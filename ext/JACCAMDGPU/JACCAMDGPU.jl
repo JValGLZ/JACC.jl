@@ -22,7 +22,7 @@ function JACC.parallel_for(N::I, f::F, x...) where {I <: Integer, F <: Function}
     # blocks = 256
     println("Threads: ", threads, " Blocks: ", blocks, " N: ", N)
     shmem_size = 2 * threads * sizeof(Float64)
-    @roc groupsize = threads gridsize = blocks shmem = shmem_size _parallel_for_amdgpu(f, x...)
+    @roc groupsize = threads gridsize = blocks shmem = shmem_size _parallel_for_amdgpu(N,f, x...)
     AMDGPU.synchronize()
 end
 
@@ -91,9 +91,11 @@ function JACC.parallel_reduce(
     return rret
 end
 
-function _parallel_for_amdgpu(f, x...)
+function _parallel_for_amdgpu(N, f, x...)
     i = (workgroupIdx().x - 1) * workgroupDim().x + workitemIdx().x
-    f(i, x...)
+    if i <= N
+        @inline f(i, x...)
+    end
     return nothing
 end
 
